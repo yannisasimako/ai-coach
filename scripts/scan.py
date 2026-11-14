@@ -1,19 +1,19 @@
 """AI coach scanner: reads Claude Code usage across all projects.
 
-    py scan.py --check          fast, incremental; prints one nudge line only when a threshold is crossed
-    py scan.py --digest [--days N] [--out FILE]
+    python scan.py --check          fast, incremental; prints one nudge line only when a threshold is crossed
+    python scan.py --digest [--days N] [--out FILE]
                                 usage digest for the /ai-coach review (default: since last review, else 30 days)
-    py scan.py --mark-reviewed  record that a review happened (resets the nudge counters)
-    py scan.py --park "item"    park a suggestion the user didn't apply; the next review re-checks it
-    py scan.py --unpark N       drop parked item N (applied, or resolved itself)
-    py scan.py --reject "item"  record a suggestion the user declined; not re-proposed unless it recurs
-    py scan.py --count "regex" [--days N]
+    python scan.py --mark-reviewed  record that a review happened (resets the nudge counters)
+    python scan.py --park "item"    park a suggestion the user didn't apply; the next review re-checks it
+    python scan.py --unpark N       drop parked item N (applied, or resolved itself)
+    python scan.py --reject "item"  record a suggestion the user declined; not re-proposed unless it recurs
+    python scan.py --count "regex" [--days N]
                                 hits of a regex over the user's prompts, per 100 prompts (a baseline)
-    py scan.py --applied "item" --watch "regex" --baseline "H/P"
+    python scan.py --applied "item" --watch "regex" --baseline "H/P"
                                 record an applied change and what to recount at the next review
-    py scan.py --decide KIND OUTCOME "item"
+    python scan.py --decide KIND OUTCOME "item"
                                 log one decision (kind = lens, outcome = yes|no|park|corrected)
-    py scan.py --label real=K noise=M [--noise "hit text"]...
+    python scan.py --label real=K noise=M [--noise "hit text"]...
                                 how many correction-like hits were real this review (detector tuning)
 
 Sources (all local, read-only): <config>/history.jsonl (every prompt, all projects),
@@ -34,7 +34,8 @@ STATE = Path(__file__).resolve().parent.parent / "state.json"
 DAY = 86400
 
 # Automated runs (headless digests, background agents) land in Temp; keep them out of "your" numbers.
-AUTOMATED_PROJECT_MARKERS = ("AppData-Local-Temp", "AppData\\Local\\Temp")
+AUTOMATED_PROJECT_MARKERS = ("AppData-Local-Temp", "AppData\\Local\\Temp",  # Windows
+                             "-var-folders-", "-private-var-folders-", "-tmp-")  # macOS, Linux
 
 CORRECTION = re.compile(
     r"^\s*(no+\b|nah\b|nope\b|wrong\b|stop\b|wait\b|don'?t\b|not what|why (did|do|is|are|would|didn'?t)\b|"
@@ -319,168 +320,6 @@ def recheck_applied(st):
                      f"since: {h}/{n} = {rate} per 100 · watch: /{a['watch']}/")
         for p in hits[-3:]:
             lines.append(f"   - [{time.strftime('%m-%d', time.localtime(p['ts'] / 1000))}] {p['text'][:140]}".replace("\n", " "))
-    lines.append("")
-    return lines
-
-
-MODEL_FIT = "Model fit:"
-FIT_LINE = re.compile(r"(?m)^Model fit: .+$")  # line start only: quotes and prose mentions don't count
-SWITCH = re.compile(r"<command-name>/(model|effort)</command-name>|^\s*/(model|effort)\b")
-# user entries the user didn't type: injected tags and the summary after compaction
-NOT_TYPED = re.compile(r"\s*(<|This session is being continued)")
-STRETCH_PROMPTS = 30  # a suggestion's stretch ends at the next suggestion, the session end, or this many prompts
-
-
-def model_fit(since_s):
-    """Each 'Model fit:' line Claude ended a reply with, whether the user ran /model or /effort within
-    their next 3 prompts, and that stretch's prompts, correction-like prompts and tokens."""
-    rows = []
-    for proj, f in iter_session_files(since_s):
-        if is_automated(proj):
-            continue
-        try:
-            raw = f.read_text(encoding="utf-8", errors="replace")
-        except OSError:
-            continue
-        if MODEL_FIT not in raw:
-            continue
-        events = []  # ("fit", text) | ("user", text) | ("tokens", n)
-        for line in raw.splitlines():
-            try:
-                d = json.loads(line)
-            except Exception:
-                continue
-            msg = d.get("message") or {}
-            content = msg.get("content")
-            if d.get("type") == "assistant":
-                u = msg.get("usage") or {}
-                events.append(("tokens", sum(u.get(k, 0) or 0 for k in (
-                    "input_tokens", "cache_read_input_tokens", "cache_creation_input_tokens", "output_tokens"))))
-                for c in content if isinstance(content, list) else []:
-                    if isinstance(c, dict) and c.get("type") == "text":
-                        events += [("fit", m.group(0)) for m in FIT_LINE.finditer(c.get("text", ""))][-1:]
-                    elif isinstance(c, dict) and c.get("type") == "tool_use" and c.get("name") == "Agent":
-                        events.append(("agent", ((c.get("input") or {}).get("model") or "").lower()))
-            elif d.get("type") == "user" and not d.get("isMeta"):
-                if isinstance(content, str):
-                    events.append(("user", content))
-                elif isinstance(content, list) and not any(
-                        isinstance(c, dict) and c.get("type") == "tool_result" for c in content):
-                    events.append(("user", " ".join(c.get("text", "") for c in content if isinstance(c, dict))))
-        for i, (kind, text) in enumerate(events):
-            if kind != "fit":
-                continue
-            users, tokens, corr, agents = [], 0, 0, []
-            for k2, v in events[i + 1:]:
-                if k2 == "fit" or len(users) >= STRETCH_PROMPTS:
-                    break
-                if k2 == "tokens":
-                    tokens += v
-                elif k2 == "agent" and sum(not NOT_TYPED.match(u) for u in users) < 3:
-                    agents.append(v)
-                elif k2 == "user":
-                    users.append(v)
-                    corr += bool(CORRECTION.search(v))
-            # a line that offers a subagent on a smaller model is taken when Claude starts one (Oct 25 review)
-            sub = re.search(r"(?i)subagent.{0,40}\b(sonnet|haiku)\b|\b(sonnet|haiku)\b.{0,40}subagent", text)
-            accepted = any(SWITCH.search(u) for u in users[:3]) or bool(
-                sub and (sub.group(1) or sub.group(2)).lower() in agents)
-            rows.append({"session": f.stem[:6], "fit": text[:160], "accepted": accepted,
-                         "prompts": len(users), "corrections": corr, "tokens": tokens})
-    return rows
-
-
-def model_fit_section(since_s):
-    rows = model_fit(since_s)
-    lines = [f"## Model fit suggestions ({len(rows)}) — accepted vs declined: fewer corrections or tokens? "
-             f"Keep or drop the rule after two reviews (rule in <config>/CLAUDE.md, added 2026-10-17)"]
-    for label, grp in (("accepted", [r for r in rows if r["accepted"]]), ("declined", [r for r in rows if not r["accepted"]])):
-        p = sum(r["prompts"] for r in grp)
-        c = sum(r["corrections"] for r in grp)
-        tk = sum(r["tokens"] for r in grp)
-        rate = f"{100 * c / p:.0f} per 100 prompts" if p else "n/a"
-        lines.append(f"- {label}: {len(grp)} · stretch prompts {p} · correction-like {c} ({rate}) · "
-                     f"tokens {tk:,} ({tk // max(p, 1):,} per prompt)")
-    for r in rows[-20:]:
-        lines.append(f"  - s:{r['session']} {'YES' if r['accepted'] else 'no '} · {r['prompts']} prompts, "
-                     f"{r['corrections']} corr, {r['tokens']:,} tok · {r['fit']}")
-    lines.append("- scope: only sessions on this machine, stretches capped at 30 prompts; corrections are the "
-                 "regex detector's hits (noisy); tokens include cache reads, so a switch's re-read shows up here")
-    lines.append("")
-    return lines
-
-
-CLEAR_FIRST = "Clear first:"
-CLEAR_LINE = re.compile(r"(?m)^Clear first: .+$")  # line start only, like FIT_LINE
-CLEAR_CMD = re.compile(r"<command-name>/clear</command-name>|^\s*/clear\b")
-
-
-def clear_fit(since_s):
-    """Each 'Clear first:' line Claude opened a reply with. Taken if the user ran /clear in their next
-    2 prompts or sent nothing more in that session (/clear starts a new transcript). For declined lines,
-    the prompts and tokens the old context kept costing until the next suggestion or STRETCH_PROMPTS."""
-    rows = []
-    for proj, f in iter_session_files(since_s):
-        if is_automated(proj):
-            continue
-        try:
-            raw = f.read_text(encoding="utf-8", errors="replace")
-        except OSError:
-            continue
-        if CLEAR_FIRST not in raw:
-            continue
-        events = []  # ("clear", text) | ("user", text) | ("tokens", n)
-        for line in raw.splitlines():
-            try:
-                d = json.loads(line)
-            except Exception:
-                continue
-            msg = d.get("message") or {}
-            content = msg.get("content")
-            if d.get("type") == "assistant":
-                u = msg.get("usage") or {}
-                events.append(("tokens", sum(u.get(k, 0) or 0 for k in (
-                    "input_tokens", "cache_read_input_tokens", "cache_creation_input_tokens", "output_tokens"))))
-                for c in content if isinstance(content, list) else []:
-                    if isinstance(c, dict) and c.get("type") == "text":
-                        events += [("clear", m.group(0)) for m in CLEAR_LINE.finditer(c.get("text", ""))][:1]
-            elif d.get("type") == "user" and not d.get("isMeta"):
-                if isinstance(content, str):
-                    events.append(("user", content))
-                elif isinstance(content, list) and not any(
-                        isinstance(c, dict) and c.get("type") == "tool_result" for c in content):
-                    events.append(("user", " ".join(c.get("text", "") for c in content if isinstance(c, dict))))
-        for i, (kind, text) in enumerate(events):
-            if kind != "clear":
-                continue
-            users, tokens = [], 0
-            for k2, v in events[i + 1:]:
-                if k2 == "clear" or len(users) >= STRETCH_PROMPTS:
-                    break
-                if k2 == "tokens":
-                    tokens += v
-                elif k2 == "user":
-                    users.append(v)
-            taken = not users or any(CLEAR_CMD.search(u) for u in users[:2])
-            rows.append({"session": f.stem[:6], "line": text[:160], "taken": taken,
-                         "prompts": 0 if taken else len(users), "tokens": 0 if taken else tokens})
-    return rows
-
-
-def clear_fit_section(since_s):
-    rows = clear_fit(since_s)
-    taken = [r for r in rows if r["taken"]]
-    declined = [r for r in rows if not r["taken"]]
-    p = sum(r["prompts"] for r in declined)
-    tk = sum(r["tokens"] for r in declined)
-    lines = [f"## Clear suggestions ({len(rows)}) — taken {len(taken)}, declined {len(declined)}. "
-             f"Keep or drop the rule after two reviews (rule in <config>/CLAUDE.md, added 2026-10-19)",
-             f"- declined stretches: {p} prompts on the old context · tokens {tk:,} ({tk // max(p, 1):,} per prompt)"]
-    for r in rows[-20:]:
-        lines.append(f"  - s:{r['session']} {'YES' if r['taken'] else 'no '} · {r['prompts']} prompts, "
-                     f"{r['tokens']:,} tok · {r['line']}")
-    lines.append("- scope: only sessions on this machine; 'taken' also counts a session that simply ended after "
-                 "the line, so it overstates clears a little")
     lines.append("")
     return lines
 
@@ -797,7 +636,7 @@ def check():
     st["nudge_text"] = ""
     if due:
         when = ("since " + time.strftime("%b %d", time.localtime(last))) if last else "in the last 30 days"
-        why = ", ".join(hits) if hits else "weekly review"
+        why = ", ".join(hits) if hits else ("weekly review" if last else "first review")
         st["nudge_text"] = (f"AI COACH REVIEW DUE ({why} {when}). Run the ai-coach skill automatically in this "
                             f"session: if the user's first message is a quick question or greeting, run it first; "
                             f"if it's real work, finish that, then run it. Present the ranked recommendations and "
@@ -874,8 +713,6 @@ def digest(days=None, out=None):
                  + ("" if cur != seen else " · no new releases since the last review"))
     lines.append("")
     lines += self_learning(st)
-    lines += model_fit_section(since)
-    lines += clear_fit_section(since)
 
     def stamp(p):
         return (f"- [{time.strftime('%m-%d', time.localtime(p['ts'] / 1000))} s:{(p['session'] or '?')[:6]}] "

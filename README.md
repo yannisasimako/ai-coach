@@ -39,7 +39,7 @@ Needs Claude Code and Python 3.
 When a review is due (weekly, or sooner if you keep correcting Claude), it prints a one-line
 notice and Claude runs the review in that session.
 
-If you use a different config folder, set `CLAUDE_CONFIG_DIR`.
+On macOS or Linux, use `python3` if `python` isn't found. If you use a different config folder, set `CLAUDE_CONFIG_DIR`.
 
 ## What it reads
 

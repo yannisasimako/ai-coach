@@ -1,7 +1,7 @@
 """Which Claude Code docs pages changed since the last /ai-coach review.
 
-    py docs_check.py --out DIR     fetch the watched pages, write a report + unified diffs to DIR
-    py docs_check.py --accept      save the fetched pages as the new baseline (run at review close)
+    python docs_check.py --out DIR     fetch the watched pages, write a report + unified diffs to DIR
+    python docs_check.py --accept      save the fetched pages as the new baseline (run at review close)
 
 Kept apart from scan.py so the usage scanner stays local-only. The docs pages carry no
 last-updated date, so each page's Markdown is compared with the copy saved at the last review.
