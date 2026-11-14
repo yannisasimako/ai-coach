@@ -100,10 +100,11 @@ spot what changed. Nothing else leaves your machine.
 Shared as-is. It runs daily on my setup (Windows). It should work on macOS and Linux but hasn't
 been tested there yet. Issues and pull requests are welcome.
 
-## Author
+## The story behind it
 
-Yannis Asimakopoulos, marketer. I write about running marketing work through Claude Code.
-[LinkedIn](https://www.linkedin.com/in/yannis-asimakopoulos)
+I wrote about why I built it and what it's caught so far: **[Look mom, no hands.](https://yannisasimako.substack.com)**
+
+Yannis Asimakopoulos · [Substack](https://yannisasimako.substack.com) · [LinkedIn](https://www.linkedin.com/in/yannis-asimakopoulos)
 
 ## License
 
