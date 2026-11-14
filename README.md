@@ -103,7 +103,7 @@ been tested there yet. Issues and pull requests are welcome.
 ## Author
 
 Yannis Asimakopoulos, marketer. I write about running marketing work through Claude Code.
-LinkedIn: https://www.linkedin.com/in/yannis-asimakopoulos
+[LinkedIn](https://www.linkedin.com/in/yannis-asimakopoulos)
 
 ## License
 
