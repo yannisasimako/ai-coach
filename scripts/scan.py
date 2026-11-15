@@ -18,7 +18,8 @@
 
 Sources (all local, read-only): <config>/history.jsonl (every prompt, all projects),
 <config>/projects/*/*.jsonl (session logs: skill calls, permission denials, interrupts),
-<config>/projects/*/memory/ (saved feedback), <config>/skills/ and project .claude/skills (skill inventory).
+<config>/projects/*/memory/ (saved feedback), <config>/skills/ and project .claude/skills (skill inventory),
+<config>/usage-data/*.html (the newest /insights report, if the user ran /insights).
 """
 
 import json
@@ -27,6 +28,7 @@ import re
 import sys
 import time
 from collections import Counter, defaultdict
+from html.parser import HTMLParser
 from pathlib import Path
 
 CONFIG = Path(os.environ.get("CLAUDE_CONFIG_DIR") or Path.home() / ".claude")
@@ -645,6 +647,76 @@ def check():
     save_state(st)
 
 
+class _Text(HTMLParser):
+    """Visible text of an HTML page: drops scripts and styles, keeps one line per block."""
+    SKIP = {"script", "style", "noscript", "svg", "head"}
+
+    def __init__(self):
+        super().__init__()
+        self.out, self.skip = [], 0
+
+    def handle_starttag(self, tag, attrs):
+        if tag in self.SKIP:
+            self.skip += 1
+        elif tag in ("p", "div", "li", "tr", "br", "section", "h1", "h2", "h3", "h4", "h5", "h6"):
+            self.out.append("\n")
+            if tag in ("h1", "h2", "h3", "h4", "h5", "h6"):
+                self.out.append("#" * int(tag[1]) + " ")
+            elif tag == "li":
+                self.out.append("- ")
+
+    def handle_endtag(self, tag):
+        if tag in self.SKIP and self.skip:
+            self.skip -= 1
+
+    def handle_data(self, data):
+        if not self.skip:
+            self.out.append(data)
+
+    def text(self):
+        raw = "".join(self.out)
+        lines = (re.sub(r"[ \t\r\f\v]+", " ", l).strip() for l in raw.split("\n"))
+        return "\n".join(l for l in lines if l and l != "-")
+
+
+def insights_report(since, out=None):
+    """The newest /insights report: an outside read of the same sessions, used as one more input.
+
+    Claude Code writes it to <config>/usage-data/report.html plus timestamped copies, and deletes them
+    after cleanupPeriodDays. The coach never runs /insights itself; it only reads what is on disk."""
+    lines = ["## Claude Code /insights report — an outside read of the same sessions; verify before proposing"]
+    folder = CONFIG / "usage-data"
+    reports = sorted(folder.glob("*.html"), key=lambda f: f.stat().st_mtime) if folder.is_dir() else []
+    if not reports:
+        lines.append("- none on disk. If the user wants it as an input, they run /insights (on their machine, "
+                     "not in a cloud session) before the review. Do not run it for them; don't block on it.")
+        lines.append("")
+        return lines
+    newest = reports[-1]
+    mtime = newest.stat().st_mtime
+    age = int((time.time() - mtime) // DAY)
+    fresh = mtime >= since
+    lines.append(f"- {newest.name} · {time.strftime('%Y-%m-%d', time.localtime(mtime))} ({age}d old) · "
+                 + ("covers this window" if fresh else
+                    "OLDER than this window: use only as background; suggest the user rerun /insights"))
+    try:
+        p = _Text()
+        p.feed(newest.read_text(encoding="utf-8", errors="replace"))
+        text = p.text()
+    except Exception as e:
+        lines.append(f"- could not read it ({type(e).__name__}); open {newest} directly")
+        lines.append("")
+        return lines
+    if out:
+        dest = Path(out).with_name(Path(out).stem + "-insights.txt")
+        dest.write_text(text[:200_000], encoding="utf-8")
+        lines.append(f"- text extracted to {dest} ({len(text) // 1024} KB). Read it in step 3.")
+    else:
+        lines.append(f"- {len(text) // 1024} KB of text; read {newest} directly")
+    lines.append("")
+    return lines
+
+
 def digest(days=None, out=None):
     st = load_state()
     now = time.time()
@@ -706,6 +778,7 @@ def digest(days=None, out=None):
     lines += retired_terms(files)
     lines += knowledge_files({p["project"] for p in mine if p["project"]})
     lines += rewrites(since)
+    lines += insights_report(since, out)
 
     cur, seen = claude_version(), st.get("claude_version_reviewed", "")
     lines.append("## Claude Code releases — check the changelog for features that fit how the user works")

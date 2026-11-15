@@ -8,7 +8,8 @@ tell whether their setup is getting better or just getting bigger.
 
 ## Why
 
-Claude Code's `/insights` gives you a snapshot when you remember to run it. This coach:
+Claude Code's `/insights` gives you a snapshot when you remember to run it. The coach reads that
+snapshot too, then does what `/insights` doesn't:
 
 - **runs itself.** A review comes due weekly, or sooner when you've been correcting Claude a lot.
 - **remembers your decisions.** Every yes, no and later is logged. Declined ideas don't come back.
@@ -20,7 +21,8 @@ Claude Code's `/insights` gives you a snapshot when you remember to run it. This
 
 ## What a review looks like
 
-1. The coach reads your recent Claude Code sessions, on your machine.
+1. The coach reads your recent Claude Code sessions on your machine, plus your latest `/insights`
+   report if you have one.
 2. It grades the changes you approved last time.
 3. It reviews four areas: your setup, your time, your team, and what's new.
 4. A second AI checks every proposal.
@@ -37,6 +39,7 @@ A real proposal from one review:
 
 | Area | Examples |
 |---|---|
+| `/insights` | Its friction points and features to try, each checked against your sessions before it becomes a proposal |
 | Setup | Corrections you keep repeating, rules that get broken anyway, tasks you still do by hand, skills nobody runs, stale memory and CLAUDE.md conflicts, leftover branches and broken hooks |
 | Time | How often the skills that run your day actually get used, and why not |
 | Team | Whether what you learn reaches the people who use your skills (skip it if you work alone) |
@@ -80,6 +83,7 @@ Everything stays on your machine. `scripts/scan.py` reads, read-only:
 - `~/.claude/history.jsonl` (your prompts)
 - `~/.claude/projects/*/*.jsonl` (session logs: skill calls, blocked actions, interrupts)
 - your saved feedback memories and skill files
+- your latest `/insights` report in `~/.claude/usage-data/`, if you ran `/insights` (optional)
 
 The coach's own record (`state.json`: decisions, applied changes, before-numbers) is written next
 to the skill and is git-ignored. `scripts/docs_check.py` fetches public Claude Code docs pages to

@@ -31,10 +31,12 @@ tied to evidence, that the user approves in batches. Nothing changes without the
 - `<config>/projects/*/memory/feedback_*.md`: corrections the user already asked Claude to remember.
 - Every reachable `SKILL.md`: user skills, project skills (`~/*/.claude/skills`), plugin sources in
   repos (`~/*/plugins/*/skills`) and the plugin cache (newest version only).
+- `<config>/usage-data/*.html`: the newest `/insights` report, if the user ran `/insights`. The scan
+  extracts its text next to the digest. The coach never runs `/insights` itself and never waits for it.
 
 `<config>` is `$CLAUDE_CONFIG_DIR`, else `~/.claude`. Sessions under a Temp folder are automated runs
 (headless jobs, background agents) and are kept out of the user's own numbers. The scan is local and
-depends on no outside service. Connected tools (issue tracker, chat search, docs) may be read,
+depends on no outside service. The `/insights` report is optional: the review runs the same without it. Connected tools (issue tracker, chat search, docs) may be read,
 read-only; nothing is written through them except in step 9, on the user's yes.
 
 Never send this data anywhere, never quote secrets, tokens or personal data from it in the report,
@@ -60,6 +62,13 @@ personal finance entirely; say only that it was skipped.
    did", "again", and most raw hits are noise ("I don't know"). Before claiming a pattern, read the
    prompts around it. Strong signals: a rule stated twice in one window (it isn't saved anywhere),
    and copy the user rewrote themselves (the "Long or pasted prompts" section).
+   **Then read the `/insights` report**, if the digest's "/insights report" section points to one.
+   It is a second reader of the same sessions: it can spot friction and features to try that the
+   digest's counts miss. Treat each of its friction points and suggestions as a candidate, never as
+   a finding: confirm it in the digest or the transcripts, map it to the part it belongs to (friction
+   goes to Part 1, features to try go to Part 4), and drop anything the user already declined. A
+   report older than the window is background only. Where the coach and `/insights` disagree, say
+   so and give the evidence.
 4. **Map the system.** Before looking for items, note in the scratchpad: who uses it (the user, and
    any teammates from `team.local.md`), on which surface (Claude Code, claude.ai, desktop), and the
    current goals (project memories, CLAUDE.md files). Every part is judged against this map.
@@ -109,7 +118,9 @@ personal finance entirely; say only that it was skipped.
    count gets no watch. Then reply with one status line per item: applied, parked or declined.
 10. **Close the review.** `--decide <part>:<lens> <yes|no|park|corrected> "<item>"` for every item
    in the list, e.g. `setup:drift`, `time:daily`, `team:reach`, `frontier:release` (corrected = the
-   user had to fix the proposal before deciding). `--label real=K noise=M` with a `--noise "<text>"`
+   user had to fix the proposal before deciding). An item that started in the `/insights` report
+   uses the lens `insights` (`setup:insights`, `frontier:insights`), so the coach learns how often
+   those ideas hold up. `--label real=K noise=M` with a `--noise "<text>"`
    per noise hit for the correction-like prompts read in step 3. `--park "<item and its evidence>"`
    for items the user deferred; `--reject "<item>"` for items they declined; `--unpark N` for what
    was applied. Then run `python "<this skill>/scripts/scan.py" --mark-reviewed` and
@@ -201,7 +212,10 @@ Read only the diffs. Skip test, build and CI advice unless the user codes.
 later" folder, a notes inbox), read each item since the last review and judge it with the two bars.
 Show one line per item: what it says, the verdict (rule, bet, already done, or no) and why.
 
-(d) **New capabilities.** Connectors and features the user already has that no skill uses yet.
+(d) **`/insights` "features to try".** Each is a bet unless the digest shows the problem it
+solves; then it's a rule. Skip any the user already uses.
+
+(e) **New capabilities.** Connectors and features the user already has that no skill uses yet.
 Each is a bet unless the digest shows the problem it solves.
 
 **The bets backlog.** Copy every bet into `<this skill>/bets.md` (merge duplicates: a repeat raises
