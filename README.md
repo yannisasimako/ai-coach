@@ -8,9 +8,6 @@
 
 ## What a review looks like
 
-A short review, with made-up data. It opens with the state of your setup, grades what you
-changed last time, then shows up to three proposals.
-
 > **State of the system**
 > Works: the `/blog-draft` skill runs every day and rarely needs fixing.
 > Doesn't: LinkedIn copy still gets rewritten by hand.
@@ -29,7 +26,7 @@ changed last time, then shows up to three proposals.
 >
 > *Answer in one line: `1 yes, 2 no, 3 later`*
 
-Every proposal comes with the evidence behind it.
+Every proposal comes with the evidence behind it. *(The skills and numbers in this example are made up.)*
 
 ## Install
 
