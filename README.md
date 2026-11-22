@@ -36,7 +36,7 @@ how your setup is doing, whether last week's changes helped, and what to change 
 
 Needs Claude Code and Python 3. Takes about five minutes.
 
-1. Copy this folder into your skills:
+1. Clone this repo into your skills folder:
    ```
    git clone https://github.com/yannisasimako/ai-coach.git ~/.claude/skills/ai-coach
    ```
