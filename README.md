@@ -55,6 +55,9 @@ somewhere else, set `CLAUDE_CONFIG_DIR`.
 
 ## How it works
 
+`/insights` gives you a snapshot when you run it. The coach reads that snapshot as one input,
+remembers what you approved or declined, and checks the next week whether each change helped.
+
 | Step | What happens |
 |---|---|
 | **Read** | Your recent sessions, prompts, saved memories and skills, plus your latest `/insights` report (Claude Code's built-in usage report). |
