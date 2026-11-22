@@ -119,8 +119,10 @@ reading and answering.
 <details>
 <summary><b>How is this different from <code>/insights</code>?</b></summary>
 
-`/insights` gives you a snapshot when you run it. The coach reads that snapshot as one input,
-remembers what you approved or declined, and checks the next week whether each change helped.
+`/insights` is a command built into Claude Code. It reads your recent sessions and writes a report
+on your patterns: where things went wrong and what to try. It's a one-off snapshot each time you run
+it. The coach reads that report as one input, remembers what you approved or declined, and checks
+the next week whether each change helped.
 </details>
 
 <details>
