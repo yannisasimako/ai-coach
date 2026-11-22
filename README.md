@@ -2,7 +2,7 @@
   <img src="docs/banner-v1.png" alt="AI Coach: how you work with Claude Code, reviewed every week. A racing bike on training wheels. By Yannis Asimakopoulos, yannisasimako.substack.com." width="800">
 </p>
 
-<h2 align="center">🧭 A weekly review of how you work with Claude Code,<br>and a check on whether last week's changes helped.</h2>
+<h2 align="center">A weekly review of how you work with Claude Code,<br>and a check on whether last week's changes helped.</h2>
 
 <p align="center">Built by a marketer, not an engineer. For people who run real work through Claude Code<br>and can't tell if their setup is getting better or just getting bigger.</p>
 
