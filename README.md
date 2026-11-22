@@ -59,11 +59,11 @@ somewhere else, set `CLAUDE_CONFIG_DIR`.
 |---|---|
 | **Read** | Your recent sessions, prompts, saved memories and skills, plus your latest `/insights` report (Claude Code's built-in usage report). |
 | **Grade** | Each change you approved last time: worked, no effect, or worse. |
-| **Check** | A separate Claude agent, which only sees the claims, checks each one against the evidence. Weak ones are dropped. |
+| **Check** | A separate Claude agent, which only sees the claims, checks each proposal against the evidence. Weak ones are dropped. |
 | **Propose** | Three at a time, each with its evidence and effort. |
 | **Apply** | Only your yeses. Before a change, the coach counts how often the problem shows up. Next week it counts again. |
 
-The four areas:
+It reviews four areas:
 
 | Area | What it looks for |
 |---|---|
