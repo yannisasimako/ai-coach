@@ -26,7 +26,7 @@
 >
 > *Answer in one line: `1 yes, 2 no, 3 later`*
 
-Every proposal comes with the evidence behind it. *(The skills and numbers in this example are made up.)*
+*Made-up example.*
 
 ## Install
 
