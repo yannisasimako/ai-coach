@@ -1,0 +1,5 @@
+# Your data stays on your machine
+state.json
+team.local.md
+docs_snapshots/
+__pycache__/
