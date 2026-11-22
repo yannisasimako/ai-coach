@@ -8,25 +8,29 @@
 
 ## What a review looks like
 
-> **State of the system**
-> Works: the `/blog-draft` skill runs every day and rarely needs fixing.
-> Doesn't: LinkedIn copy still gets rewritten by hand.
-> Biggest gap: no skill turns a blog post into social posts.
->
-> **Last week's changes**
-> - Memory: "keep LinkedIn posts under 150 words" — **worked.** "Too long" corrections went from 6 to 1 per 100 prompts.
-> - Memory: "always end with a CTA" — **no effect.** Missing-CTA fixes stayed at 4 per 100 prompts.
->   Next: move the rule into the `/blog-draft` skill.
->
-> **Proposals**
-> 1. **Build a `/social-from-blog` skill.** You rewrote the opening of 5 LinkedIn drafts by hand
->    this week (Nov 3, 5, 6). Checked: no existing skill does this. Effort: about 20 min of Claude's time.
-> 2. **Archive `/event-recap`.** Not run in 30 days, and no other file mentions it. Effort: 1 min.
-> 3. **Housekeeping:** 3 merged branches still on GitHub. Delete them? One yes or no.
->
-> *Answer in one line: `1 yes, 2 no, 3 later`*
+Once a week, after you finish a task, Claude posts a review in your session. It has three parts:
+how your setup is doing, whether last week's changes helped, and what to change next. This one is
+made up:
 
-*Made-up example.*
+> **How your setup is doing**
+> Working: your `/blog-draft` skill runs every day and rarely needs fixing.
+> Not working: you still rewrite LinkedIn copy by hand.
+> Biggest gap: nothing turns a blog post into social posts.
+>
+> **Did last week's changes help?**
+> - The rule "keep LinkedIn posts under 150 words": **worked.** You told Claude "too long" 6 times
+>   per 100 prompts before the rule, once since.
+> - The rule "always end with a CTA": **no effect.** You still added the CTA yourself 4 times per
+>   100 prompts. Next step: build the rule into the `/blog-draft` skill.
+>
+> **What to change next**
+> 1. **Build a `/social-from-blog` skill.** You rewrote the opening of 5 LinkedIn drafts by hand
+>    this week (Nov 3, 5, 6). No existing skill does this. About 20 minutes of Claude's time.
+> 2. **Archive the `/event-recap` skill.** You haven't used it in 30 days, and nothing depends on it.
+>    1 minute.
+> 3. **Clean up:** delete 3 old branches that are already merged.
+>
+> *Reply in one line, like `1 yes, 2 no, 3 later`.*
 
 ## Install
 
