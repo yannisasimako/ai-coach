@@ -6,7 +6,7 @@
 
 <p align="center">Built by a marketer, not an engineer. For people who run real work through Claude Code<br>and can't tell if their setup is getting better or just getting bigger.</p>
 
-## 👀 What a review looks like
+## What a review looks like
 
 A short review, with made-up data. It opens with the state of your setup, grades what you
 changed last time, then shows up to three proposals.
@@ -29,9 +29,9 @@ changed last time, then shows up to three proposals.
 >
 > *Answer in one line: `1 yes, 2 no, 3 later`*
 
-Every proposal comes with the evidence behind it. A second AI checks each one before you see it.
+Every proposal comes with the evidence behind it.
 
-## 🚀 Install
+## Install
 
 Needs Claude Code and Python 3. Takes about five minutes.
 
@@ -51,40 +51,30 @@ Needs Claude Code and Python 3. Takes about five minutes.
      }
    }
    ```
+   Already have hooks? Add this inside your existing `SessionStart` list.
 
 On macOS or Linux, use `python3` if `python` isn't found. If you keep Claude Code's config
 somewhere else, set `CLAUDE_CONFIG_DIR`.
 
-## ⚙️ How it works
-
-```mermaid
-flowchart LR
-    A[Your Claude Code sessions<br>and /insights report] --> B[Weekly review]
-    B --> C[Up to 3 proposals<br>at a time]
-    C --> D[You answer<br>yes, no or later]
-    D -->|approved changes get<br>a starting count| E[Next review grades them]
-    E --> B
-```
+## How it works
 
 | Step | What happens |
 |---|---|
 | **Read** | Your recent sessions, prompts, saved memories and skills, plus your latest `/insights` report (Claude Code's built-in usage report). |
 | **Grade** | Each change you approved last time: worked, no effect, or worse. |
-| **Review** | Four areas — see below. |
-| **Check** | A second AI verifies every proposal against the evidence. Weak ones are dropped. |
+| **Review** | Four areas, below. |
+| **Check** | A separate Claude agent, which sees only the claims and not the reasoning, checks each one against the evidence. Weak ones are dropped. |
 | **Propose** | Three at a time, each with its evidence and effort. |
-| **Apply** | Only your yeses. Each gets a starting count, so next week's review can grade it. |
+| **Apply** | Only your yeses. Before a change, the coach counts how often the problem shows up. Next week it counts again. |
 
 The four areas:
 
 | Area | What it looks for |
 |---|---|
 | **Your setup** | Corrections you keep repeating, rules that get broken anyway, tasks still done by hand, skills nobody runs, stale memory, broken hooks |
-| **Your time** | Whether the skills that run your day actually get used, and why not |
+| **Your routines** | If you use skills for recurring work, like a morning plan or meeting prep, whether they get used and what you still do by hand |
 | **Your team** | Whether what you learn reaches the people who use your skills. Skipped if you work alone. |
 | **What's new** | Claude Code releases and docs changes, scored as ideas worth a test |
-
-**Runs on your machine. Remembers every decision. Nothing changes without your yes.**
 
 <details>
 <summary>What's in the folder</summary>
@@ -94,7 +84,7 @@ The four areas:
 | `SKILL.md` | The review method Claude follows |
 | `scripts/scan.py` | Reads your usage, runs the weekly check, logs your decisions |
 | `scripts/docs_check.py` | Spots what changed in the Claude Code docs since the last review |
-| `bets.md` | Starting point for your backlog of ideas worth a test |
+| `bets.md` | Starting point for your list of ideas to try |
 | `team.local.example.md` | Optional: describe your teammates for the team review |
 
 Your own record — decisions, backlog, team notes — lives in `~/.claude/ai-coach-data/`, outside
@@ -102,7 +92,7 @@ this folder. Updating the skill never touches it.
 
 </details>
 
-## 🔁 Using it
+## Using it
 
 - **A review comes due on its own.** Once a week, or sooner if you've been correcting Claude a lot.
   Claude runs it in your next session — after your task, never in the middle of it.
@@ -110,29 +100,28 @@ this folder. Updating the skill never touches it.
 - **Declined ideas don't come back.** Ideas you park get re-checked next time.
 - **Run one anytime** with `/ai-coach`.
 
-## 🔒 Privacy and time
+## Privacy and time
 
-**Everything stays on your machine.** The scanner only reads:
+The scanner runs on your machine. It reads:
 
 - your prompts and session logs in `~/.claude`
 - your saved memories and skill files
 - your `/insights` report, if you have one
 
-The coach's own record — decisions, applied changes, starting counts — stays local and out of git.
-The only thing it fetches is the public Claude Code docs, to spot what changed.
+The review is a normal Claude Code session, so Claude reads the summary like anything else in your
+chats. Nothing goes anywhere else. The coach's own record (your decisions and its counts) stays
+local and out of git. The only thing it fetches is the public Claude Code docs, to spot what changed.
 
 **Time:** a review takes about half an hour from start to last change shipped. 10–15 minutes of
 that is you reading and answering. Claude does the rest.
 
-## 🛠️ If something goes wrong
+## If something goes wrong
 
 | Problem | Fix |
 |---|---|
 | `python` not found | Use `python3` in the hook command. On Windows, try `py`. |
 | The hook runs but no review ever comes due | Check the path in the hook points at `scripts/scan.py` inside your skills folder. |
-| On Windows, `/insights` fails from Git Bash | Git Bash rewrites `/insights` into a file path. Run it from PowerShell. |
-
-## 📌 Status
+## Status
 
 I use it every week on my own setup, on Windows. It should work on macOS and Linux, but I haven't
 tested it there yet. Issues and pull requests are welcome.
@@ -141,7 +130,7 @@ Why I built it and what it's caught so far: **[Fast, or just pedaling hard?](htt
 
 ---
 
-## 👋 Built by Yannis Asimakopoulos
+## Built by Yannis Asimakopoulos
 
 Honest writing on marketing, AI, and figuring it out as you go.
 
