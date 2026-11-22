@@ -9,8 +9,7 @@
 ## What a review looks like
 
 Once a week, after you finish a task, Claude posts a review in your session. It has three parts:
-how your setup is doing, whether last week's changes helped, and what to change next. This one is
-made up:
+how your setup is doing, whether last week's changes helped, and what to change next:
 
 > **How your setup is doing**
 > Working: your `/blog-draft` skill runs every day and rarely needs fixing.
@@ -31,6 +30,8 @@ made up:
 > 3. **Clean up:** delete 3 old branches that are already merged.
 >
 > *Reply in one line, like `1 yes, 2 no, 3 later`.*
+
+*Made-up example.*
 
 ## Install
 
