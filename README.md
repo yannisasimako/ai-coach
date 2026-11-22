@@ -110,7 +110,7 @@ this folder. Updating the skill never touches it.
 - **Declined ideas don't come back.** Ideas you park get re-checked next time.
 - **Run one anytime** with `/ai-coach`.
 
-## 🔒 Privacy and cost
+## 🔒 Privacy and time
 
 **Everything stays on your machine.** The scanner only reads:
 
@@ -121,9 +121,8 @@ this folder. Updating the skill never touches it.
 The coach's own record — decisions, applied changes, starting counts — stays local and out of git.
 The only thing it fetches is the public Claude Code docs, to spot what changed.
 
-**Cost:** a review takes about half an hour from start to last change shipped. 10–15 minutes of
-that is you reading and answering. Claude does the rest. It runs on your Claude plan, like any
-other session.
+**Time:** a review takes about half an hour from start to last change shipped. 10–15 minutes of
+that is you reading and answering. Claude does the rest.
 
 ## 🛠️ If something goes wrong
 
