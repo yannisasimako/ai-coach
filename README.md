@@ -41,7 +41,8 @@ Needs Claude Code and Python 3. Takes about five minutes.
    git clone https://github.com/yannisasimako/ai-coach.git ~/.claude/skills/ai-coach
    ```
 2. In Claude Code, type `/ai-coach` to run your first review.
-3. To make it run itself, add a SessionStart hook to `~/.claude/settings.json`:
+3. To have it run on its own, tell Claude Code to run a quick check whenever a session starts.
+   Add this to `~/.claude/settings.json`:
    ```json
    {
      "hooks": {
@@ -63,18 +64,18 @@ somewhere else, set `CLAUDE_CONFIG_DIR`.
 |---|---|
 | **Read** | Your recent sessions, prompts, saved memories and skills, plus your latest `/insights` report (Claude Code's built-in usage report). |
 | **Grade** | Each change you approved last time: worked, no effect, or worse. |
-| **Check** | A separate Claude agent, which only sees the claims, checks each proposal against the evidence. Weak ones are dropped. |
+| **Check** | Before you see anything, a separate Claude agent re-checks each proposal against the evidence. It sees only the proposals, not the reasoning behind them, so it can't be talked into them. Weak ones are dropped. |
 | **Propose** | Three at a time, each with its evidence and effort. |
-| **Apply** | Only your yeses. Before a change, the coach counts how often the problem shows up. Next week it counts again. |
+| **Apply** | Only your yeses. Before a change, the coach counts how often the problem shows up. Next week it counts again, and that's the grade. |
 
 It reviews four areas:
 
 | Area | What it looks for |
 |---|---|
-| **Your setup** | Corrections you keep repeating, rules that get broken anyway, tasks still done by hand, skills nobody runs, stale memory, broken hooks |
+| **Your setup** | Corrections you keep repeating, rules that get broken anyway, tasks still done by hand, skills nobody runs, memory notes that are out of date, broken hooks |
 | **Your routines** | If you use skills for recurring work, like a morning plan or meeting prep, whether they get used and what you still do by hand |
-| **Your team** | Whether what you learn reaches the people who use your skills. Skipped if you work alone. |
-| **What's new** | Claude Code releases and docs changes, scored as ideas worth a test |
+| **Your team** | If teammates use skills you built, whether your fixes reach them. Skipped if you work alone. |
+| **What's new** | New Claude Code features and docs changes that could help you, each with a small test to try |
 
 <details>
 <summary>What's in the folder</summary>
@@ -96,8 +97,8 @@ touches it.
 
 A review comes due once a week, or sooner if you've been correcting Claude a lot. Claude runs it in
 your next session, once your task is done. You answer in one line, like `1 yes, 2 no, 3 later`, and
-can ask about any item first. Declined ideas don't come back. Parked ones get checked again next
-time. To run one yourself, type `/ai-coach`.
+can ask about any item first. Ideas you say no to don't come back. Ideas you mark
+"later" come up again next time. To run one yourself, type `/ai-coach`.
 
 ## Privacy and time
 
