@@ -59,8 +59,7 @@ somewhere else, set `CLAUDE_CONFIG_DIR`.
 |---|---|
 | **Read** | Your recent sessions, prompts, saved memories and skills, plus your latest `/insights` report (Claude Code's built-in usage report). |
 | **Grade** | Each change you approved last time: worked, no effect, or worse. |
-| **Review** | Four areas, below. |
-| **Check** | A separate Claude agent, which sees only the claims and not the reasoning, checks each one against the evidence. Weak ones are dropped. |
+| **Check** | A separate Claude agent, which only sees the claims, checks each one against the evidence. Weak ones are dropped. |
 | **Propose** | Three at a time, each with its evidence and effort. |
 | **Apply** | Only your yeses. Before a change, the coach counts how often the problem shows up. Next week it counts again. |
 
@@ -84,18 +83,17 @@ The four areas:
 | `bets.md` | Starting point for your list of ideas to try |
 | `team.local.example.md` | Optional: describe your teammates for the team review |
 
-Your own record — decisions, backlog, team notes — lives in `~/.claude/ai-coach-data/`, outside
-this folder. Updating the skill never touches it.
+Your own record lives in `~/.claude/ai-coach-data/`, outside this folder. Updating the skill never
+touches it.
 
 </details>
 
 ## Using it
 
-- **A review comes due on its own.** Once a week, or sooner if you've been correcting Claude a lot.
-  Claude runs it in your next session — after your task, never in the middle of it.
-- **Answer in one line.** `1 yes, 2 no, 3 later`. Ask about any item before you decide.
-- **Declined ideas don't come back.** Ideas you park get re-checked next time.
-- **Run one anytime** with `/ai-coach`.
+A review comes due once a week, or sooner if you've been correcting Claude a lot. Claude runs it in
+your next session, once your task is done. You answer in one line, like `1 yes, 2 no, 3 later`, and
+can ask about any item first. Declined ideas don't come back. Parked ones get checked again next
+time. To run one yourself, type `/ai-coach`.
 
 ## Privacy and time
 
@@ -105,12 +103,12 @@ The scanner runs on your machine. It reads:
 - your saved memories and skill files
 - your `/insights` report, if you have one
 
-The review is a normal Claude Code session, so Claude reads the summary like anything else in your
-chats. Nothing goes anywhere else. The coach's own record (your decisions and its counts) stays
+The scanner turns that into a summary. The review is a normal Claude Code session, so Claude reads
+the summary like anything else you send it. Nothing goes anywhere else. The coach's own record (your decisions and its counts) stays
 local and out of git. The only thing it fetches is the public Claude Code docs, to spot what changed.
 
-**Time:** a review takes about half an hour from start to last change shipped. 10–15 minutes of
-that is you reading and answering. Claude does the rest.
+A review takes about half an hour from start to last change shipped. 10–15 minutes of that is you
+reading and answering.
 
 ## If something goes wrong
 
