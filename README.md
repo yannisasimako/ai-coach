@@ -147,6 +147,8 @@ Honest writing on marketing, AI, and figuring it out as you go.
 
 [LinkedIn](https://www.linkedin.com/in/yannis-asimakopoulos/) · [Substack](https://substack.com/@yannisasimako)
 
+More from me: **[Competitor Watch](https://github.com/yannisasimako/competitor-watch)**, every competitor move, checked against your positioning.
+
 ---
 
 MIT license

@@ -705,8 +705,8 @@ def check():
     st["nudge_text"] = ""
     if due:
         when = ("since " + time.strftime("%b %d", time.localtime(last))) if last else "in the last 30 days"
-        why = ", ".join(hits) if hits else ("weekly review" if last else "first review")
-        st["nudge_text"] = (f"AI COACH REVIEW DUE ({why} {when}). Run the ai-coach skill automatically in this "
+        reason = f"{', '.join(hits)} {when}" if hits else (f"weekly review {when}" if last else "first review")
+        st["nudge_text"] = (f"AI COACH REVIEW DUE ({reason}). Run the ai-coach skill automatically in this "
                             f"session: if the user's first message is a quick question or greeting, run it first; "
                             f"if it's real work, finish that, then run it. Present the ranked recommendations and "
                             f"ask for the batch answer. Apply nothing without approval.")
