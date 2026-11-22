@@ -12,9 +12,9 @@ Once a week, after you finish a task, Claude posts a review in your session. It 
 how your setup is doing, whether last week's changes helped, and what to change next:
 
 > **How your setup is doing**
-> Working: your `/blog-draft` skill runs every day and rarely needs fixing.
-> Not working: you still rewrite LinkedIn copy by hand.
-> Biggest gap: nothing turns a blog post into social posts.
+> ✅ **Working:** your `/blog-draft` skill runs every day and rarely needs a fix.<br>
+> ❌ **Not working:** Claude keeps skipping your "always end with a CTA" rule.<br>
+> 🎯 **Biggest gap:** no skill turns a blog post into LinkedIn posts, so you rewrite every draft by hand.
 >
 > **Did last week's changes help?**
 > - The rule "keep LinkedIn posts under 150 words": **worked.** You told Claude "too long" 6 times
