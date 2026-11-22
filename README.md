@@ -118,6 +118,7 @@ that is you reading and answering. Claude does the rest.
 |---|---|
 | `python` not found | Use `python3` in the hook command. On Windows, try `py`. |
 | The hook runs but no review ever comes due | Check the path in the hook points at `scripts/scan.py` inside your skills folder. |
+
 ## Status
 
 I use it every week on my own setup, on Windows. It should work on macOS and Linux, but I haven't
