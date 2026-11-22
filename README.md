@@ -55,9 +55,6 @@ somewhere else, set `CLAUDE_CONFIG_DIR`.
 
 ## How it works
 
-`/insights` gives you a snapshot when you run it. The coach reads that snapshot as one input,
-remembers what you approved or declined, and checks the next week whether each change helped.
-
 | Step | What happens |
 |---|---|
 | **Read** | Your recent sessions, prompts, saved memories and skills, plus your latest `/insights` report (Claude Code's built-in usage report). |
@@ -112,6 +109,34 @@ local and out of git. The only thing it fetches is the public Claude Code docs, 
 
 A review takes about half an hour from start to last change shipped. 10–15 minutes of that is you
 reading and answering.
+
+## Questions people ask
+
+<details>
+<summary><b>How is this different from <code>/insights</code>?</b></summary>
+
+`/insights` gives you a snapshot when you run it. The coach reads that snapshot as one input,
+remembers what you approved or declined, and checks the next week whether each change helped.
+</details>
+
+<details>
+<summary><b>Does it change anything on its own?</b></summary>
+
+No. It proposes, you answer, and it only applies your yeses.
+</details>
+
+<details>
+<summary><b>Does it read my code?</b></summary>
+
+No. It reads your prompts, session logs and memories, plus the files that tell Claude what to do:
+CLAUDE.md files and skills.
+</details>
+
+<details>
+<summary><b>Does it work with claude.ai or the Claude app?</b></summary>
+
+No. It reads Claude Code's files on your computer.
+</details>
 
 ## If something goes wrong
 
